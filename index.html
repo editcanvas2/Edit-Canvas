@@ -6,26 +6,14 @@
   
   <!-- SEO Meta Tags -->
   <title>EditIMG: Free Online Image Editor – Compress, Resize, Crop & More</title>
-  <meta name="description" content="Edit, compress, resize, crop, rotate, and convert images to PDF for free with EditIMG. A suite of fast, private, browser-based tools. No uploads required.">
+  <meta name="description" content="The official homepage for EditIMG. Discover our full suite of free, private, and browser-based tools to edit, compress, resize, crop, and convert images.">
   <meta name="keywords" content="image editor, free image editor, online image tool, compress image, resize image, crop image, image to pdf, jpg to pdf, watermark photo, html to image, browser-based editor">
-  <link rel="canonical" href="https://YOUR-BLOGGER-URL.blogspot.com/">
-
-  <!-- Open Graph / Social Media Meta Tags -->
-  <meta property="og:title" content="EditIMG: Free Online Image Editor & PDF Converter">
-  <meta property="og:description" content="All your essential image tools in one place — quick, simple, and secure.">
-  <meta property="og:image" content="https://YOUR-LINK-TO-A-PREVIEW-IMAGE.png">
-  <meta property="og:url" content="https://YOUR-BLOGGER-URL.blogspot.com/">
-  <meta property="og:type" content="website">
-
+  
   <!-- Libraries & Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <style>
@@ -33,63 +21,33 @@
     body { font-family: 'Inter', sans-serif; }
     .tool-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
     .tool-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-    .cropper-view-box, .cropper-face { border-radius: 0.5rem; }
-    .cropper-line, .cropper-point { background-color: #10b981; }
-    .dropzone-highlight { border-color: #10b981; background-color: rgba(16, 185, 129, 0.05); }
-    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; background: #10b981; border-radius: 50%; cursor: pointer; }
-    #live-canvas { max-width: 100%; max-height: 500px; }
-    /* Scroll Animation */
     .fade-in-up { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
     .fade-in-up.is-visible { opacity: 1; transform: translateY(0); }
-    /* Image Preview for PDF Tool */
-    .image-preview { transition: all 0.3s ease; position: relative; }
-    .image-preview:hover { transform: scale(1.03); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-    .remove-btn { position: absolute; top: 0.5rem; right: 0.5rem; opacity: 0; transition: opacity 0.3s ease; }
-    .image-preview:hover .remove-btn { opacity: 1; }
-    /* Accordion Styles */
     .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
     .accordion.active .accordion-content { max-height: 500px; }
-    .accordion-toggle { transition: transform 0.3s ease; }
     .accordion.active .accordion-toggle { transform: rotate(180deg); }
   </style>
 
-  <!-- SEO Structured Data (JSON-LD) -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "EditIMG",
-    "url": "https://YOUR-BLOGGER-URL.blogspot.com/",
-    "applicationCategory": "DesignApplication",
-    "operatingSystem": "Any (Web browser)",
-    "description": "A suite of free, private, browser-based tools to compress, resize, crop, rotate, watermark, and convert images to PDF online without uploads.",
-    "featureList": [ "Image Compress", "Image Resize", "Image Crop", "Image Rotate", "Convert to JPEG", "Watermark Image", "Image to PDF", "HTML to Image" ],
-    "offers": { "@type": "Offer", "price": "0" },
-    "creator": { "@type": "Person", "name": "Bhuwan Prasad Joshi" }
-  }
-  </script>
 </head>
 <body class="bg-slate-50 text-gray-800">
   <div class="min-h-screen flex flex-col">
     <header class="bg-white/80 shadow-sm sticky top-0 z-50 backdrop-blur-lg">
       <div class="container mx-auto px-4">
         <div class="flex justify-between items-center py-4">
-          <div class="flex items-center space-x-3 flex-shrink-0"><i class="fas fa-images text-green-500 text-3xl"></i><h1 class="text-2xl md:text-3xl font-bold text-gray-800">EditIMG</h1></div>
-          <div class="flex-grow flex items-center justify-center px-2 sm:px-4">
-            <div class="relative w-full max-w-md"><span class="absolute inset-y-0 left-0 flex items-center pl-3"><i class="fas fa-search text-gray-400"></i></span><input type="search" id="toolSearchInput" placeholder="Search for a tool..." class="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm md:text-base"></div>
+          <div class="flex items-center space-x-3 flex-shrink-0">
+            <i class="fas fa-images text-green-500 text-3xl"></i>
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-800">EditIMG</h1>
           </div>
-          <nav class="hidden md:flex items-center space-x-6 flex-shrink-0"><a href="#features-intro" class="text-gray-600 hover:text-green-500 font-medium">Features</a><a href="#faq" class="text-gray-600 hover:text-green-500 font-medium">FAQ</a></nav>
+          <nav class="hidden md:flex items-center space-x-8 flex-shrink-0">
+            <a href="#features-intro" class="text-gray-600 hover:text-green-500 font-medium">Features</a>
+            <a href="#faq" class="text-gray-600 hover:text-green-500 font-medium">FAQ</a>
+            <a href="#contact" class="text-gray-600 hover:text-green-500 font-medium">Contact</a>
+          </nav>
         </div>
       </div>
     </header>
 
     <main id="main-content" class="flex-grow container mx-auto px-4 py-8">
-      <section id="tool-interface" class="hidden max-w-5xl mx-auto">
-        <div class="flex items-center mb-8"><button id="back-to-tools" class="text-green-500 hover:text-green-600 font-semibold flex items-center"><i class="fas fa-arrow-left mr-2"></i>Back to All Tools</button></div>
-        <div class="text-center mb-12"><h2 id="tool-title" class="text-3xl font-bold mb-4"></h2><p id="tool-description" class="text-gray-600 max-w-2xl mx-auto"></p></div>
-        <div id="tool-container"></div>
-      </section>
-      
       <section id="homepage-content">
         <div class="text-center pt-8 mb-16">
             <h2 class="text-4xl md:text-5xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-green-500 via-blue-500 to-purple-500">The Fastest Online Image Editor</h2>
@@ -97,9 +55,10 @@
         </div>
         <section id="tool-selection" class="mb-16">
           <h3 class="text-2xl font-bold text-center mb-2">🔧 Your Free Image Toolkit</h3>
-          <p class="text-center text-gray-500 mb-10">Click any tool to get started instantly.</p>
-          <div id="tools" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-6"></div>
-           <div id="no-results" class="hidden text-center py-12"><i class="fas fa-search text-4xl text-gray-400 mb-4"></i><h3 class="text-xl font-semibold text-gray-700">No tools found</h3><p class="text-gray-500">Try a different search term.</p></div>
+          <p class="text-center text-gray-500 mb-10">Click any tool to launch it instantly in a new page.</p>
+          <div id="tools" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-6">
+            <!-- Tool cards will be dynamically inserted here -->
+          </div>
         </section>
         <section id="features-intro" class="py-16 bg-white rounded-2xl shadow-sm border fade-in-up">
           <div class="container mx-auto px-4 text-center">
@@ -120,6 +79,16 @@
             <div class="accordion"><button class="w-full flex justify-between items-center text-left font-semibold py-2 accordion-btn"><span>Does this work on mobile devices?</span><i class="fas fa-chevron-down accordion-toggle text-green-500"></i></button><div class="accordion-content mt-2 text-gray-600"><p>Yes, all tools are designed to be fully responsive and work on modern mobile browsers. You can edit your images on the go from your phone or tablet.</p></div></div>
           </div>
         </section>
+         <!-- Contact Section -->
+        <section id="contact" class="pt-20 max-w-4xl mx-auto fade-in-up">
+            <h2 class="text-3xl font-bold text-center mb-4">Get in Touch</h2>
+            <p class="text-center text-gray-600 mb-8">Have a question, feedback, or a feature request? We'd love to hear from you. Reach out to our team, and we'll get back to you as soon as possible.</p>
+            <div class="text-center">
+                <a href="mailto:editcanvas24@gmail.com" class="inline-block px-8 py-3 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition-colors">
+                    <i class="fas fa-envelope mr-2"></i>Contact Us: editcanvas24@gmail.com
+                </a>
+            </div>
+        </section>
       </section>
     </main>
     <footer class="bg-white py-6 border-t border-gray-200 mt-20">
@@ -129,98 +98,61 @@
       </div>
     </footer>
   </div>
-
-  <!-- ########## TOOL TEMPLATES START ########## -->
-  <template id="dropzone-template"><div class="max-w-xl mx-auto"><div id="dropzone" class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer transition-all duration-300 hover:border-green-500 hover:bg-green-50"><div class="flex flex-col items-center justify-center space-y-4"><i class="fas fa-cloud-upload-alt text-4xl text-green-500"></i><h3 class="text-xl font-semibold">Drop your image here</h3><p class="text-gray-500">or click to select a file</p><input type="file" id="fileInput" class="hidden" accept="image/*"><button id="selectFileBtn" class="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">Select Image</button></div></div></div></template>
-  <template id="compress-image-template"><div id="tool-root"></div></template>
-  <template id="resize-image-template"><div id="tool-root"></div></template>
-  <template id="crop-image-template"><div id="tool-root"></div></template>
-  <template id="rotate-image-template"><div id="tool-root"></div></template>
-  <template id="html-to-image-template"><div class="max-w-4xl mx-auto"><div class="bg-white p-6 rounded-xl shadow-md border"><label for="htmlInput" class="block text-sm font-medium text-gray-700 mb-2">Enter HTML Code:</label><textarea id="htmlInput" rows="10" class="w-full p-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500" placeholder="e.g., <h1 style='color: blue;'>Hello World!</h1>"></textarea><div id="htmlPreview" class="mt-4 p-4 border border-dashed rounded-md min-h-[100px] bg-gray-50"></div><div class="mt-4 text-right"><button id="generateImageBtn" class="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">Convert to Image</button></div></div><div id="resultContainer" class="hidden text-center mt-8"></div></div></template>
-  <template id="convert-to-jpeg-template"><div id="tool-root"></div></template>
-  <template id="watermark-image-template"><div id="tool-root"></div></template>
-  <template id="image-to-pdf-template">
-    <div class="max-w-4xl mx-auto">
-        <div class="text-center pt-8 mb-12">
-          <h2 class="text-4xl md:text-5xl font-extrabold mb-4 text-gray-800">Convert Images to a High-Quality PDF</h2>
-          <p class="text-lg text-gray-600 max-w-3xl mx-auto">Drag & drop your images or click to browse. Combine multiple JPG, PNG, and other images into a single PDF document without losing quality.</p>
-        </div>
-
-        <!-- Uploader -->
-        <div id="dropzone" class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer transition-all duration-300 hover:border-blue-500 hover:bg-blue-50">
-          <div class="flex flex-col items-center justify-center space-y-4">
-            <i class="fas fa-cloud-upload-alt text-5xl text-blue-500"></i>
-            <h3 class="text-2xl font-semibold">Drop images here</h3>
-            <p class="text-gray-500">or click to select files</p>
-            <input type="file" id="fileInput" class="hidden" accept="image/*" multiple>
-            <button id="selectFilesBtn" class="px-8 py-3 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition-colors duration-300">
-              Select Images
-            </button>
-          </div>
-        </div>
-
-        <!-- Preview and Controls Area -->
-        <div id="previewSection" class="hidden mt-8">
-          <div class="flex justify-between items-center mb-4 pb-4 border-b">
-            <h3 class="text-xl font-bold text-gray-700">Selected Images</h3>
-            <div class="flex space-x-2">
-              <button id="clearAllBtn" class="px-4 py-2 text-sm bg-red-500 text-white font-semibold rounded-md hover:bg-red-600 transition-colors">Clear All</button>
-              <button id="generatePdfBtn" class="px-6 py-2 text-sm bg-green-500 text-white font-semibold rounded-md hover:bg-green-600 transition-colors">
-                <i class="fas fa-file-alt mr-2"></i>Generate PDF
-              </button>
-            </div>
-          </div>
-          <div id="imagePreviews" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-8">
-            <!-- Image previews will be injected here -->
-          </div>
-        </div>
-
-        <!-- Loading State -->
-        <div id="loadingState" class="hidden text-center py-16">
-          <div class="animate-pulse flex flex-col items-center">
-            <i class="fas fa-spinner fa-spin text-5xl text-blue-500 mb-6"></i>
-            <p class="text-xl text-gray-600 font-semibold">Generating your PDF, please wait...</p>
-          </div>
-        </div>
-
-        <!-- Result Section -->
-        <div id="resultSection" class="hidden text-center py-12">
-          <div class="bg-white rounded-2xl shadow-xl p-8 max-w-md mx-auto border">
-            <i class="fas fa-check-circle text-6xl text-green-500 mb-6"></i>
-            <h3 class="text-2xl font-bold text-gray-800 mb-2">Your PDF is Ready!</h3>
-            <p class="text-gray-600 mb-8">Your images have been successfully combined into a single PDF document.</p>
-            <button id="downloadPdfBtn" class="w-full px-6 py-4 bg-blue-500 text-white font-bold text-lg rounded-lg hover:bg-blue-600 transition-colors duration-300">
-              <i class="fas fa-download mr-2"></i>Download PDF
-            </button>
-            <button id="newConversionBtn" class="mt-4 w-full px-6 py-3 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300 transition-colors duration-300">Create Another PDF</button>
-          </div>
-        </div>
-
-        <!-- FAQ Section -->
-        <section id="faq" class="pt-20 max-w-4xl mx-auto">
-          <h2 class="text-3xl font-bold text-center mb-10">Frequently Asked Questions</h2>
-          <div class="space-y-4 bg-white p-8 rounded-2xl shadow-lg border">
-            <div class="accordion border-b border-gray-200 pb-4"><button class="w-full flex justify-between items-center text-left font-semibold py-2 accordion-btn"><span>Are my images safe?</span><i class="fas fa-chevron-down accordion-toggle text-blue-500"></i></button><div class="accordion-content mt-2 text-gray-600"><p>Yes, 100%. This tool works entirely in your browser. Your images are never sent to or stored on any server. Your privacy is guaranteed.</p></div></div>
-            <div class="accordion border-b border-gray-200 pb-4"><button class="w-full flex justify-between items-center text-left font-semibold py-2 accordion-btn"><span>Will the image quality be preserved in the PDF?</span><i class="fas fa-chevron-down accordion-toggle text-blue-500"></i></button><div class="accordion-content mt-2 text-gray-600"><p>Yes. The tool is designed to maintain the original quality of your images. They are embedded into the PDF without any extra, lossy compression.</p></div></div>
-            <div class="accordion"><button class="w-full flex justify-between items-center text-left font-semibold py-2 accordion-btn"><span>Can I reorder the images?</span><i class="fas fa-chevron-down accordion-toggle text-blue-500"></i></button><div class="accordion-content mt-2 text-gray-600"><p>Currently, images are added to the PDF in the order you select them. To change the order, simply clear the selection and add the files again in your desired sequence. Drag-and-drop reordering is planned for a future update!</p></div></div>
-          </div>
-        </section>
-      </div>
-  </template>
-  <!-- ########## TOOL TEMPLATES END ########## -->
   
   <script>
-    function runAppWhenReady(callback) { const checker = setInterval(() => { if (document.getElementById('tools')) { clearInterval(checker); callback(); } }, 100); }
+    document.addEventListener('DOMContentLoaded', () => {
+        const tools = {
+            'compress-image': { title: 'Image Compress', description: 'Reduce file size', icon: 'fa-compress-alt' },
+            'resize-image': { title: 'Image Resize', description: 'Change dimensions', icon: 'fa-expand-arrows-alt' },
+            'crop-image': { title: 'Image Crop', description: 'Trim your image', icon: 'fa-crop-alt' },
+            'rotate-image': { title: 'Image Rotate', description: 'Adjust orientation', icon: 'fa-sync-alt' },
+            'convert-to-jpeg': { title: 'Convert to JPEG', description: 'Convert to JPG', icon: 'fa-file-image' },
+            'watermark-image': { title: 'Watermark Image', description: 'Add protection', icon: 'fa-copyright' },
+            'image-to-pdf': { title: 'Image to PDF', description: 'Combine JPGs to PDF', icon: 'fa-file-pdf' },
+            'html-to-image': { title: 'HTML to Image', description: 'Capture web code', icon: 'fa-code' },
+        };
 
-    // --- All tool initialization functions are defined first ---
+        const toolsGrid = document.getElementById('tools');
+        toolsGrid.innerHTML = ''; // Clear existing content
 
-    function initCompressImage() { setupSimpleImageTool({ toolId: 'compress-image', title: 'Image Compress', format: 'jpeg' }); }
-    function initResizeImage() { setupInteractiveTool({ toolId: 'resize-image', title: 'Image Resize' }); }
-    function initCropImage() { setupSimpleImageTool({ toolId: 'crop-image', title: 'Image Crop' }); }
-    function initRotateImage() { setupInteractiveTool({ toolId: 'rotate-image', title: 'Image Rotate' }); }
-    function initHtmlToImage() { 
-      const htmlInput = document.getElementById('htmlInput'), htmlPreview = document.getElementById('htmlPreview'), generateBtn = document.getElementById('generateImageBtn'), resultContainer = document.getElementById('resultContainer');
-      htmlInput.oninput = () => htmlPreview.innerHTML = htmlInput.value;
-      generateBtn.onclick = () => {
-        if (!htmlInput.value.trim()) { alert('Please enter some HTML code.'); return; }
-        resultContainer.innerHTML = `<div class="text-center p-4"><i class="fas fa-spinner fa-spin text-2xl text-green-500"></i><p class="mt-2">Generating image...</p></div>`; resultCon
+        Object.keys(tools).forEach(key => {
+            const tool = tools[key];
+            
+            // Create the card element
+            const card = document.createElement('div');
+            card.className = 'tool-card bg-white p-6 rounded-xl shadow-md border border-gray-200 cursor-pointer text-center';
+            card.innerHTML = `<div class="flex items-center justify-center h-16 w-16 bg-green-100 rounded-full mx-auto mb-4"><i class="fas ${tool.icon} text-2xl text-green-500"></i></div><h3 class="text-md font-bold">${tool.title}</h3><p class="text-sm text-gray-500">${tool.description}</p>`;
+            
+            // Create the anchor link that wraps the card
+            const link = document.createElement('a');
+            // This links to your tool page. Make sure the filename matches.
+            link.href = `EditIMG.html#tool=${key}`; 
+            link.appendChild(card);
+            
+            toolsGrid.appendChild(link);
+        });
+
+        // Accordion functionality
+        document.querySelectorAll('.accordion-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const accordion = button.closest('.accordion');
+                accordion.classList.toggle('active');
+            });
+        });
+
+        // Scroll animation observer
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-in-up').forEach(el => {
+            observer.observe(el);
+        });
+    });
+  </script>
+</body>
+  </html>

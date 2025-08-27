@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to PDF Converter - EditPDF</title>
+    <meta name="description" content="Convert JPG, PNG, and other images to a high-quality PDF document for free. Combine multiple images into a single file. Secure and all-device friendly.">
+    <link rel="canonical" href="https://your-username.github.io/your-repo-name/tools/image-to-pdf.html">
+    <link rel="icon" type="image/png" href="https://www.google.com/s2/favicons?domain=example.com&sz=32">
+    <!-- Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .file-preview { 
+            position: relative; 
+            overflow: hidden;
+        }
+        .remove-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background-color: rgba(239, 68, 68, 0.9); /* red-500 with transparency */
+            color: white;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+            transform: scale(0.8);
+            border: 2px solid white;
+        }
+        .file-preview:hover .remove-btn {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .sortable-ghost {
+            opacity: 0.4;
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-white/90 shadow-sm sticky top-0 z-50 backdrop-blur-lg">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="../index.html" class="flex items-center space-x-3"><i class="fas fa-file-pdf text-red-500 text-3xl"></i><h1 class="text-2xl font-bold text-gray-800">EditPDF</h1></a>
+            <a href="../index.html" class="text-gray-600 hover:text-red-500 font-medium flex items-center"><i class="fas fa-arrow-left mr-2"></i>Back to Main Page</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold mb-4">Image to PDF Converter</h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">Upload JPG, PNG, or other image files to create a single, high-quality PDF.</p>
+        </div>
+
+        <div class="max-w-4xl mx-auto bg-white p-6 sm:p-8 rounded-xl shadow-lg border">
+            <!-- File Upload Area -->
+            <div id="file-dropzone" class="border-2 border-dashed border-gray-300 rounded-lg p-8 sm:p-12 text-center cursor-pointer hover:border-red-500 hover:bg-red-50 transition-colors">
+                <i class="fas fa-cloud-upload-alt text-5xl text-red-500 mb-4"></i>
+                <h3 class="text-xl sm:text-2xl font-semibold text-gray-700">Drop image files here</h3>
+                <p class="text-gray-500 my-2">or</p>
+                <button id="select-files-btn" class="mt-2 px-6 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 font-semibold">Select Images</button>
+                <input type="file" id="file-input" class="hidden" accept="image/jpeg,image/png,image/webp,image/bmp" multiple>
+            </div>
+
+            <!-- File Preview & Action Area -->
+            <div id="preview-area" class="mt-8 hidden">
+                <h3 class="text-xl font-bold mb-4 text-gray-700">Your Images (Drag to Reorder)</h3>
+                <div id="file-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 min-h-[160px] bg-gray-50 p-4 rounded-lg">
+                    <!-- Image previews will be dynamically inserted here -->
+                </div>
+                <div class="flex flex-col sm:flex-row justify-center items-center mt-8 gap-4">
+                     <button id="add-more-btn" class="w-full sm:w-auto px-6 py-3 bg-gray-200 text-gray-800 font-semibold rounded-full hover:bg-gray-300"><i class="fas fa-plus mr-2"></i>Add More Images</button>
+                    <button id="convert-btn" class="w-full sm:w-auto bg-green-500 text-white font-bold px-8 py-4 rounded-full hover:bg-green-600 text-xl transition-transform transform hover:scale-105"><i class="fas fa-file-export mr-2"></i>Create PDF</button>
+                </div>
+            </div>
+
+            <!-- Status/Download Area -->
+            <div id="status-area" class="mt-8 text-center hidden"></div>
+        </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white mt-20">
+        <div class="container mx-auto px-6 py-12 text-center text-gray-500">
+            <p>Designed by <a href="https://www.instagram.com/mr.bhuwan7?igsh=MWt3aWw1M2loMWxsYQ==" target="_blank" rel="noopener noreferrer" class="text-red-400 hover:text-white">Bhuwan Prasad Joshi</a></p>
+            <p class="text-sm mt-2">&copy; <span id="copyright-year"></span> EditPDF. All Rights Reserved.</p>
+        </div>
+    </footer>
+    
+    <script>
+        document.getElementById('copyright-year').textContent = new Date().getFullYear();
+        
+        const { PDFDocument } = PDFLib;
+        const fileInput = document.getElementById('file-input');
+        const dropzone = document.getElementById('file-dropzone');
+        const selectBtn = document.getElementById('select-files-btn');
+        const addMoreBtn = document.getElementById('add-more-btn');
+        const previewArea = document.getElementById('preview-area');
+        const fileListDiv = document.getElementById('file-list');
+        const convertBtn = document.getElementById('convert-btn');
+        const statusArea = document.getElementById('status-area');
+        
+        let filesToConvert = [];
+
+        const handleFiles = (files) => {
+            for (const file of files) {
+                if (file.type.startsWith('image/')) {
+                    if (!filesToConvert.some(f => f.name === file.name && f.size === file.size)) {
+                        filesToConvert.push(file);
+                    }
+                }
+            }
+            renderPreviews();
+        };
+
+        const renderPreviews = () => {
+            fileListDiv.innerHTML = '';
+            if (filesToConvert.length > 0) {
+                previewArea.classList.remove('hidden');
+                dropzone.classList.add('hidden');
+            } else {
+                 previewArea.classList.add('hidden');
+                 dropzone.classList.remove('hidden');
+            }
+
+            filesToConvert.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const fileDiv = document.createElement('div');
+                    fileDiv.className = 'file-preview bg-white rounded-lg border cursor-move shadow aspect-square';
+                    fileDiv.setAttribute('data-index', index);
+                    fileDiv.innerHTML = `
+                        <img src="${e.target.result}" class="w-full h-full object-cover rounded-lg" alt="${file.name}">
+                        <button class="remove-btn" title="Remove image">&times;</button>`;
+                    fileDiv.querySelector('.remove-btn').onclick = (e) => {
+                        e.stopPropagation();
+                        const fileIndex = parseInt(fileDiv.getAttribute('data-index'), 10);
+                        filesToConvert.splice(fileIndex, 1);
+                        renderPreviews();
+                    };
+                    fileListDiv.appendChild(fileDiv);
+                };
+                reader.readAsDataURL(file);
+            });
+        };
+        
+        selectBtn.onclick = () => fileInput.click();
+        addMoreBtn.onclick = () => fileInput.click();
+        fileInput.onchange = (e) => handleFiles(e.target.files);
+
+        dropzone.ondragover = (e) => { e.preventDefault(); dropzone.classList.add('border-red-500', 'bg-red-50'); };
+        dropzone.ondragleave = () => dropzone.classList.remove('border-red-500', 'bg-red-50');
+        dropzone.ondrop = (e) => { e.preventDefault(); dropzone.classList.remove('border-red-500', 'bg-red-50'); handleFiles(e.dataTransfer.files); };
+        
+        convertBtn.onclick = async () => {
+            if (filesToConvert.length === 0) {
+                alert('Please select at least one image file.');
+                return;
+            }
+            statusArea.classList.remove('hidden');
+            statusArea.innerHTML = `<div class="flex items-center justify-center text-lg"><i class="fas fa-spinner fa-spin mr-3"></i>Creating PDF... This may take a moment.</div>`;
+            convertBtn.disabled = true;
+            addMoreBtn.disabled = true;
+
+            try {
+                const pdfDoc = await PDFDocument.create();
+                for (const file of filesToConvert) {
+                    const arrayBuffer = await file.arrayBuffer();
+                    let image;
+                    if (file.type === 'image/jpeg') {
+                        image = await pdfDoc.embedJpg(arrayBuffer);
+                    } else if (file.type === 'image/png') {
+                        image = await pdfDoc.embedPng(arrayBuffer);
+                    } else {
+                        // Fallback for other types like webp/bmp by drawing to canvas first
+                        const blob = new Blob([arrayBuffer], {type: file.type});
+                        const dataUrl = await new Promise(res => {
+                            const reader = new FileReader();
+                            reader.onload = () => res(reader.result);
+                            reader.readAsDataURL(blob);
+                        });
+                        const tempImg = document.createElement('img');
+                        tempImg.src = dataUrl;
+                        await new Promise(res => tempImg.onload = res);
+                        
+                        const canvas = document.createElement('canvas');
+                        canvas.width = tempImg.width;
+                        canvas.height = tempImg.height;
+                        canvas.getContext('2d').drawImage(tempImg, 0, 0);
+                        const pngDataUrl = canvas.toDataURL('image/png');
+                        image = await pdfDoc.embedPng(pngDataUrl);
+                    }
+                    
+                    const page = pdfDoc.addPage([image.width, image.height]);
+                    page.drawImage(image, { x: 0, y: 0, width: image.width, height: image.height });
+                }
+                const pdfBytes = await pdfDoc.save();
+                const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                const url = URL.createObjectURL(blob);
+                
+                statusArea.innerHTML = `
+                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg text-left">
+                        <h3 class="font-bold">PDF Created Successfully!</h3>
+                        <p>Your images have been combined into a single PDF.</p>
+                        <div class="mt-4">
+                            <a href="${url}" download="images-to.pdf" class="bg-blue-500 text-white font-bold px-6 py-3 rounded-full hover:bg-blue-600 inline-block"><i class="fas fa-download mr-2"></i>Download Now</a>
+                            <button onclick="location.reload()" class="ml-4 font-semibold text-gray-700 hover:underline">Start Over</button>
+                        </div>
+                    </div>`;
+            } catch (error) {
+                statusArea.innerHTML = `<p class="text-red-500 font-semibold">An error occurred. One of the image files may be corrupted or in an unsupported format.</p>`;
+                console.error(error);
+            } finally {
+                convertBtn.disabled = false;
+                addMoreBtn.disabled = false;
+            }
+        };
+
+        Sortable.create(fileListDiv, {
+            animation: 150,
+            ghostClass: 'sortable-ghost',
+            onEnd: (evt) => {
+                const item = filesToConvert.splice(evt.oldIndex, 1)[0];
+                filesToConvert.splice(evt.newIndex, 0, item);
+                renderPreviews();
+            }
+        });
+    </script>
+</body>
+</html>

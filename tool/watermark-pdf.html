@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watermark PDF - Add Text Watermark to PDF - EditPDF</title>
+    <meta name="description" content="Add a custom text watermark to your PDF files. Control the text, font, color, size, opacity, rotation, and position. Free, secure, and instant preview.">
+    <link rel="canonical" href="https://your-username.github.io/your-repo-name/tools/watermark-pdf.html">
+    <link rel="icon" type="image/png" href="https://www.google.com/s2/favicons?domain=example.com&sz=32">
+    <!-- Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.min.js"></script>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        #pdf-preview-wrapper { position: relative; width: 100%; height: 0; padding-bottom: 141.42%; /* A4 aspect ratio */ }
+        #pdf-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        #watermark-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; display: flex; justify-content: center; align-items: center; }
+        input[type=range]::-webkit-slider-thumb { appearance: none; width: 24px; height: 24px; background: #ef4444; border-radius: 50%; cursor: pointer; border: 3px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.2); }
+    </style>
+</head>
+<body class="bg-slate-100 text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-white/90 shadow-sm sticky top-0 z-50 backdrop-blur-lg">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="../index.html" class="flex items-center space-x-3"><i class="fas fa-file-pdf text-red-500 text-3xl"></i><h1 class="text-2xl font-bold text-gray-800">EditPDF</h1></a>
+            <a href="../index.html" class="text-gray-600 hover:text-red-500 font-medium flex items-center"><i class="fas fa-arrow-left mr-2"></i>Back to Main Page</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold mb-4">Watermark PDF</h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">Add a custom text watermark to every page of your PDF document.</p>
+        </div>
+
+        <div id="file-dropzone" class="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg border text-center cursor-pointer hover:border-red-500 hover:bg-red-50 transition-colors">
+            <i class="fas fa-cloud-upload-alt text-5xl text-red-500 mb-4"></i>
+            <h3 class="text-2xl font-semibold">Drop your PDF here</h3>
+            <p class="text-gray-500 my-2">or</p>
+            <button id="select-file-btn" class="mt-2 px-6 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 font-semibold">Select File</button>
+            <input type="file" id="file-input" class="hidden" accept=".pdf">
+        </div>
+
+        <!-- Editor View -->
+        <div id="editor-area" class="mt-8 hidden grid lg:grid-cols-3 gap-8">
+            <!-- Options Panel -->
+            <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-lg border h-fit">
+                <h2 class="text-2xl font-bold mb-4">Watermark Options</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label for="text-input" class="font-semibold">Watermark Text</label>
+                        <input type="text" id="text-input" value="CONFIDENTIAL" class="w-full mt-1 p-2 border rounded-md">
+                    </div>
+                    <div>
+                        <label for="font-select" class="font-semibold">Font</label>
+                        <select id="font-select" class="w-full mt-1 p-2 border rounded-md">
+                            <option value="Helvetica" selected>Helvetica (Sans-Serif)</option>
+                            <option value="TimesRoman">Times New Roman (Serif)</option>
+                            <option value="Courier">Courier (Monospace)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="color-input" class="font-semibold">Color</label>
+                        <input type="color" id="color-input" value="#ff0000" class="w-full mt-1 h-10 p-1 border rounded-md">
+                    </div>
+                     <div>
+                        <label for="opacity-slider" class="font-semibold">Opacity (<span id="opacity-value">25</span>%)</label>
+                        <input type="range" id="opacity-slider" min="0" max="100" value="25" class="w-full mt-1">
+                    </div>
+                    <div>
+                        <label for="size-slider" class="font-semibold">Font Size (<span id="size-value">50</span>pt)</label>
+                        <input type="range" id="size-slider" min="10" max="250" value="50" class="w-full mt-1">
+                    </div>
+                    <div>
+                        <label for="rotation-slider" class="font-semibold">Rotation (<span id="rotation-value">315</span>°)</label>
+                        <input type="range" id="rotation-slider" min="0" max="360" value="315" class="w-full mt-1">
+                    </div>
+                    <div>
+                        <label class="font-semibold">Position</label>
+                        <div id="position-grid" class="grid grid-cols-3 gap-2 mt-2">
+                            <button data-align="flex-start" data-justify="flex-start" class="border p-3 rounded hover:bg-gray-200"><i class="fas fa-arrow-up-left"></i></button>
+                            <button data-align="flex-start" data-justify="center" class="border p-3 rounded hover:bg-gray-200"><i class="fas fa-arrow-up"></i></button>
+                            <button data-align="flex-start" data-justify="flex-end" class="border p-3 rounded hover:bg-gray-200"><i class="fas fa-arrow-up-right"></i></button>
+                            <button data-align="center" data-justify="flex-start" class="border p-3 rounded hover:bg-gray-200"><i class="fas fa-arrow-left"></i></button>
+                            <button data-align="center" data-justify="center" class="border p-3 rounded bg-red-500 text-white"><i class="fas fa-crosshairs"></i></button>
+                            <button data-align="center" data-justify="flex-end" class="border p-3 rounded hover:bg-gray-200"><i class="fas fa-arrow-right"></i></button>
+                            <button data-align="flex-end" data-justify="flex-start" class="border p-3 rounded hover:bg-gray-200"><i class="fas fa-arrow-down-left"></i></button>
+                            <button data-align="flex-end" data-justify="center" class="border p-3 rounded hover:bg-gray-200"><i class="fas fa-arrow-down"></i></button>
+                            <button data-align="flex-end" data-justify="flex-end" class="border p-3 rounded hover:bg-gray-200"><i class="fas fa-arrow-down-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+                 <div class="text-center mt-8">
+                    <button id="watermark-btn" class="w-full bg-green-500 text-white font-bold px-8 py-4 rounded-full hover:bg-green-600 text-xl"><i class="fas fa-stamp mr-2"></i>Apply & Download</button>
+                </div>
+            </div>
+
+            <!-- Preview Panel -->
+            <div class="lg:col-span-2">
+                 <div id="pdf-preview-wrapper" class="bg-white rounded-xl shadow-lg border overflow-hidden">
+                    <canvas id="pdf-canvas"></canvas>
+                    <div id="watermark-overlay"><span id="watermark-text"></span></div>
+                </div>
+            </div>
+        </div>
+        <div id="status-area" class="mt-8 text-center hidden"></div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white mt-20">
+        <div class="container mx-auto px-6 py-12 text-center text-gray-500">
+            <p>Designed by <a href="https://www.instagram.com/mr.bhuwan7?igsh=MWt3aWw1M2loMWxsYQ==" target="_blank" rel="noopener noreferrer" class="text-red-400 hover:text-white">Bhuwan Prasad Joshi</a></p>
+            <p class="text-sm mt-2">&copy; <span id="copyright-year"></span> EditPDF. All Rights Reserved.</p>
+        </div>
+    </footer>
+    <script>
+        document.getElementById('copyright-year').textContent = new Date().getFullYear();
+
+        const { PDFDocument, StandardFonts, rgb, degrees } = PDFLib;
+        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js`;
+
+        const fileInput = document.getElementById('file-input');
+        const dropzone = document.getElementById('file-dropzone');
+        const editorArea = document.getElementById('editor-area');
+        const canvas = document.getElementById('pdf-canvas');
+        const textInput = document.getElementById('text-input');
+        const fontSelect = document.getElementById('font-select');
+        const colorInput = document.getElementById('color-input');
+        const opacitySlider = document.getElementById('opacity-slider');
+        const sizeSlider = document.getElementById('size-slider');
+        const rotationSlider = document.getElementById('rotation-slider');
+        const positionGrid = document.getElementById('position-grid');
+        const watermarkBtn = document.getElementById('watermark-btn');
+        const statusArea = document.getElementById('status-area');
+        const watermarkOverlay = document.getElementById('watermark-overlay');
+        const watermarkText = document.getElementById('watermark-text');
+        
+        let pdfFile = null;
+        let pdfDocForRendering = null;
+        let watermarkState = {
+            text: 'CONFIDENTIAL', font: 'Helvetica', color: '#ff0000', opacity: 0.25, size: 50, rotation: 315, align: 'center', justify: 'center'
+        };
+
+        const handleFile = async (file) => {
+            if (!file || file.type !== 'application/pdf') return;
+            
+            pdfFile = file;
+            dropzone.classList.add('hidden');
+            statusArea.classList.remove('hidden');
+            statusArea.innerHTML = `<div class="flex items-center justify-center text-lg"><i class="fas fa-spinner fa-spin mr-3"></i>Checking file...</div>`;
+
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                // **CRITICAL STEP: Check if the PDF is encrypted**
+                await PDFDocument.load(arrayBuffer, { ignoreEncryption: false });
+
+                // If the above line does not throw an error, proceed.
+                editorArea.classList.remove('hidden');
+                statusArea.classList.add('hidden');
+                const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+                pdfDocForRendering = await loadingTask.promise;
+                renderPdfPage(1);
+                updateWatermarkPreview();
+
+            } catch (error) {
+                if (error.constructor.name === 'EncryptedPDFError') {
+                    statusArea.innerHTML = `
+                        <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg text-left">
+                            <h3 class="font-bold">Password Protected PDF</h3>
+                            <p>This file is encrypted. Please remove the password using our <a href="unlock-pdf.html" class="font-bold underline hover:text-yellow-800">Unlock PDF</a> tool before adding a watermark.</p>
+                            <button onclick="location.reload()" class="mt-4 font-semibold text-gray-700 hover:underline">Try Another File</button>
+                        </div>`;
+                } else {
+                     statusArea.innerHTML = `<p class="text-red-500 font-semibold">Could not read PDF. The file may be corrupted.</p>`;
+                }
+                dropzone.classList.remove('hidden');
+                console.error(error);
+            }
+        };
+
+        const renderPdfPage = async (pageNum) => {
+            const page = await pdfDocForRendering.getPage(pageNum);
+            const viewport = page.getViewport({ scale: 1.5 });
+            const context = canvas.getContext('2d');
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+            await page.render({ canvasContext: context, viewport: viewport }).promise;
+        };
+        
+        const updateWatermarkPreview = () => {
+            watermarkText.textContent = watermarkState.text;
+            watermarkText.style.fontFamily = watermarkState.font === 'TimesRoman' ? 'Times New Roman, serif' : watermarkState.font;
+            watermarkText.style.color = watermarkState.color;
+            watermarkText.style.opacity = watermarkState.opacity;
+            watermarkText.style.fontSize = `${watermarkState.size * (canvas.width / 595)}px`; // Scale font size relative to preview
+            watermarkText.style.transform = `rotate(${watermarkState.rotation}deg)`;
+            watermarkOverlay.style.alignItems = watermarkState.align;
+            watermarkOverlay.style.justifyContent = watermarkState.justify;
+        };
+
+        document.getElementById('select-file-btn').onclick = () => fileInput.click();
+        fileInput.onchange = (e) => handleFile(e.target.files[0]);
+        dropzone.ondragover = (e) => { e.preventDefault(); dropzone.classList.add('border-red-500', 'bg-red-50'); };
+        dropzone.ondragleave = () => dropzone.classList.remove('border-red-500', 'bg-red-50');
+        dropzone.ondrop = (e) => { e.preventDefault(); dropzone.classList.remove('border-red-500', 'bg-red-50'); handleFile(e.dataTransfer.files[0]); };
+        
+        textInput.oninput = (e) => { watermarkState.text = e.target.value; updateWatermarkPreview(); };
+        fontSelect.onchange = (e) => { watermarkState.font = e.target.value; updateWatermarkPreview(); };
+        colorInput.oninput = (e) => { watermarkState.color = e.target.value; updateWatermarkPreview(); };
+        opacitySlider.oninput = (e) => { watermarkState.opacity = e.target.value / 100; document.getElementById('opacity-value').textContent = e.target.value; updateWatermarkPreview(); };
+        sizeSlider.oninput = (e) => { watermarkState.size = e.target.value; document.getElementById('size-value').textContent = e.target.value; updateWatermarkPreview(); };
+        rotationSlider.oninput = (e) => { watermarkState.rotation = e.target.value; document.getElementById('rotation-value').textContent = e.target.value; updateWatermarkPreview(); };
+        
+        positionGrid.querySelectorAll('button').forEach(button => {
+            button.onclick = (e) => {
+                const current = e.currentTarget;
+                watermarkState.align = current.dataset.align;
+                watermarkState.justify = current.dataset.justify;
+                positionGrid.querySelector('.bg-red-500').classList.remove('bg-red-500', 'text-white');
+                current.classList.add('bg-red-500', 'text-white');
+                updateWatermarkPreview();
+            };
+        });
+
+        watermarkBtn.onclick = async () => {
+            if (!pdfFile) { alert('Please select a PDF file first.'); return; }
+            statusArea.classList.remove('hidden');
+            statusArea.innerHTML = `<div class="flex items-center justify-center text-lg"><i class="fas fa-spinner fa-spin mr-3"></i>Adding watermark to all pages...</div>`;
+            watermarkBtn.disabled = true;
+
+            try {
+                const arrayBuffer = await pdfFile.arrayBuffer();
+                const pdfDoc = await PDFDocument.load(arrayBuffer);
+                const fontMap = { Helvetica: StandardFonts.Helvetica, TimesRoman: StandardFonts.TimesRoman, Courier: StandardFonts.Courier, };
+                const selectedFont = await pdfDoc.embedFont(fontMap[watermarkState.font]);
+                const hexColor = watermarkState.color.substring(1);
+                const color = { r: parseInt(hexColor.substring(0, 2), 16) / 255, g: parseInt(hexColor.substring(2, 4), 16) / 255, b: parseInt(hexColor.substring(4, 6), 16) / 255, };
+                const pages = pdfDoc.getPages();
+
+                for (const page of pages) {
+                    const { width, height } = page.getSize();
+                    const textWidth = selectedFont.widthOfTextAtSize(watermarkState.text, watermarkState.size);
+                    
+                    let x, y;
+                    if (watermarkState.justify === 'flex-start') x = 40;
+                    else if (watermarkState.justify === 'flex-end') x = width - textWidth - 40;
+                    else x = (width - textWidth) / 2;
+
+                    if (watermarkState.align === 'flex-start') y = height - watermarkState.size - 40;
+                    else if (watermarkState.align === 'flex-end') y = 40;
+                    else y = (height - watermarkState.size) / 2;
+
+                    page.drawText(watermarkState.text, { x, y, font: selectedFont, size: Number(watermarkState.size), color: rgb(color.r, color.g, color.b), opacity: Number(watermarkState.opacity), rotate: degrees(Number(watermarkState.rotation)), });
+                }
+
+                const pdfBytes = await pdfDoc.save();
+                const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                const url = URL.createObjectURL(blob);
+                
+                statusArea.innerHTML = `
+                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg text-left">
+                        <h3 class="font-bold">Watermark Applied!</h3>
+                        <p>Your new watermarked PDF is ready to download.</p>
+                        <div class="mt-4">
+                            <a href="${url}" download="watermarked-${pdfFile.name}" class="bg-blue-500 text-white font-bold px-6 py-3 rounded-full hover:bg-blue-600 inline-block"><i class="fas fa-download mr-2"></i>Download Now</a>
+                            <button onclick="location.reload()" class="ml-4 font-semibold text-gray-700 hover:underline">Start Over</button>
+                        </div>
+                    </div>`;
+                
+            } catch (error) {
+                // This catch is now for unexpected errors, as encryption is handled separately.
+                statusArea.innerHTML = `<p class="text-red-500 font-semibold">A critical error occurred. Please try another file.</p>`;
+                console.error(error);
+            } finally {
+                watermarkBtn.disabled = false;
+            }
+        };
+    </script>
+</body>
+</html>
